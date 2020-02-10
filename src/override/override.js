@@ -8,6 +8,7 @@
 function updateStore(storeKey, data) {
   let obj = {}
   obj[storeKey] = JSON.stringify(data)
+
   chrome.storage.sync.set(obj)
 }
 
@@ -55,6 +56,10 @@ const key = "rhugtkeldibnridrlerlgcrrdvneevit"
 // location is in darkness.
 let defaultData = {
   notepadContent: "",
+  ptoTotal: 0,
+  pto: 0,
+  holiday: 0,
+  timeUp: 0
 }
 
 // >= v0.0.3 uses an object to store notepad content
@@ -100,6 +105,10 @@ readStore(key, d => {
 function listenerUpdate() {
   readStore(key, d => {
     document.querySelector(".notepad").innerHTML = d.notepadContent
+    document.getElementById("ptoTotal").value = d.ptoTotal
+    document.getElementById("pto").value= d.pto
+    document.getElementById("holiday").value = d.holiday
+    document.getElementById("timeUp").value = d.timeUp
   })
 }
 
@@ -113,27 +122,103 @@ function start(data) {
     now.getHours() < 12
       ? "morning"
       : now.getHours() > 17
-      ? "evening"
-      : "afternoon"
+        ? "evening"
+        : "afternoon"
 
   let g = document.querySelector(".greeting")
   g.innerHTML = `Good ${broadTime}. It is ${timeString}.`
 
   // Set up the notepad
-  let notepad = document.querySelector(".notepad")
-  notepad.innerHTML = data["notepadContent"]
+  let notepadContent = document.querySelector(".notepad")
+  notepadContent.innerHTML = data["notepadContent"]
 
-  notepad.addEventListener("input", e => {
-    if (notepad !== document.activeElement || !windowIsActive) return
+  let ptoTotal = document.getElementById('ptoTotal')
+  ptoTotal.innerHTML = data["ptoTotal"]
+  
+  let pto = document.getElementById('pto')
+  pto.innerHTML = data["pto"]
+  
+  let holiday = document.getElementById('holiday')
+  holiday.innerHTML = data["holiday"]
+  
+  let timeUp = document.getElementById('timeUp')
+  timeUp.innerHTML = data["timeUp"]
+
+  let inputs = [notepadContent, ptoTotal, pto, holiday, timeUp]
+
+  notepadContent.addEventListener("input", e => {
+    if (notepadContent !== document.activeElement || !windowIsActive) return
 
     let obj = Object.assign(data, {
-      notepadContent: notepad.value,
+      notepadContent: notepadContent.value
     })
-
     updateStore(key, obj)
   })
 
+  ptoTotal.addEventListener("input", e => {
+    if (ptoTotal !== document.activeElement || !windowIsActive) return
+
+    let obj = Object.assign(data, {
+      ptoTotal: ptoTotal.value
+    })
+    updateStore(key, obj)
+  })
+  
+  pto.addEventListener("input", e => {
+    if (pto !== document.activeElement || !windowIsActive) return
+
+    let obj = Object.assign(data, {
+      pto: pto.value
+    })
+    updateStore(key, obj)
+  })
+  
+  holiday.addEventListener("input", e => {
+    if (holiday !== document.activeElement || !windowIsActive) return
+
+    let obj = Object.assign(data, {
+      holiday: holiday.value
+    })
+    updateStore(key, obj)
+  })
+  
+  timeUp.addEventListener("input", e => {
+    if (timeUp !== document.activeElement || !windowIsActive) return
+
+    let obj = Object.assign(data, {
+      timeUp: timeUp.value
+    })
+    updateStore(key, obj)
+  })
+  
+  // Set event listeners for inputs
+  for (let i = 0; i < inputs.length; i++) {
+    // inputs[i].addEventListener("input", e => {
+    //   if (inputs[i] !== document.activeElement || !windowIsActive) return
+  
+    //   let obj = Object.assign(data, {
+    //     [inputs[i]]: inputs[i].value
+    //   })
+
+    //   updateStore(key, obj)
+    // })
+    
+    inputs[i].addEventListener("blur", e => {
+      if (storeListener) {
+        clearInterval(storeListener)
+      }
+      storeListener = setInterval(listenerUpdate, 1000)
+    })
+
+    inputs[i].addEventListener("focus", e => {
+      if (storeListener) {
+        clearInterval(storeListener)
+      }
+    })
+  }
+  
   // Allow updating content between tabs
+  
   let windowIsActive
 
   let storeListener = setInterval(listenerUpdate, 1000)
@@ -149,23 +234,10 @@ function start(data) {
     }
     storeListener = setInterval(listenerUpdate, 1000)
   }
-
-  notepad.addEventListener("blur", e => {
-    if (storeListener) {
-      clearInterval(storeListener)
-    }
-    storeListener = setInterval(listenerUpdate, 1000)
-  })
-
-  notepad.addEventListener("focus", e => {
-    if (storeListener) {
-      clearInterval(storeListener)
-    }
-  })
-
+  
   window.addEventListener("mousewheel", scrollCapture)
 
   function scrollCapture(e) {
-    if (e.target !== notepad) notepad.scrollTop += e.deltaY
+    if (e.target !== notepadContent) notepadContent.scrollTop += e.deltaY
   }
 }

@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>New Tab</title>
-    <link href="./override.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,700&display=swap&subset=cyrillic,cyrillic-ext,latin-ext,vietnamese"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <p class="greeting"></p>
-    <textarea placeholder="Write something." class="notepad"></textarea>
-    <script src="./override.js"></script>
-  </body>
+<head>
+  <title>New Tab</title>
+  <link href="./override.css" rel="stylesheet"/>
+  <link
+    href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,700&display=swap&subset=cyrillic,cyrillic-ext,latin-ext,vietnamese"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <p class="read-only greeting"></p>
+  <p class="read-only">
+      PTO Total: <input id="ptoTotal" placeholder="0" type="text" class="custom-input" max="8" />
+  </p>
+  <p class="read-only mt-0 mb-0">
+      &uarr; <input id="timeUp" placeholder="0" type="text" class="custom-input" maxlength="4">
+  </p>
+  <p class="read-only mt-0 mb-0">
+      PTO <input id="pto" placeholder="0" type="number" class="custom-input" max="10" min="0" step=".1" />
+  </p>
+  <p class="read-only mt-0">
+      Holiday <input id="holiday" placeholder="0" type="number" class="custom-input" max="10" min="0" step="1" />
+  </p>
+  </p>
+  <textarea placeholder="Write something." class="notepad">
+
+  </textarea>
+  <script src="./override.js"></script>
+</body>
 </html>
